@@ -1,0 +1,476 @@
+{
+	"info": {
+		"_postman_id": "2b8c6a45-5fc2-47c9-977d-ea8a5907ed40",
+		"name": "Suite-ejercicio2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Feature Posts",
+			"item": [
+				{
+					"name": "2.1 Escenario:  [Posts] Validar que un usuario pueda consultar todos sus posts desde la sección ‘Mis posts’",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userId = pm.iterationData.get(\"id_usuario\");\r",
+									"    pm.variables.set(\"userId\", userId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"const userIds=jsonData.map(user => user.userId)\r",
+									"\r",
+									"pm.test(\"2.1 Escenario:  [Posts] Validar que un usuario pueda consultar todos sus posts desde la sección ‘Mis posts’\", function () {    \r",
+									" for (let i = 0; i < userIds.length; i++) {     \r",
+									" pm.expect(userIds[i]).to.eql(pm.variables.get(\"userId\"));\r",
+									"}\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/users/{{userId}}/posts",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Escenario:  [Posts] Validar que un usuario pueda consultar todos los posts creados desde la ‘sección posts de todos los usuarios’",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"const userIds = jsonData.map(user => user.userId)\r",
+									"\r",
+									"function removerRepetidos(valor, i, self) {\r",
+									"    return self.indexOf(valor) === i;\r",
+									"}\r",
+									"\r",
+									"pm.test(\"2.2 Escenario:  [Posts] Validar que un usuario pueda consultar todos los posts creados desde la ‘sección posts de todos los usuarios’\", function () {\r",
+									"    var idUnicos = userIds.filter(removerRepetidos);\r",
+									"    pm.expect(idUnicos.length).to.be.above(0)\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/posts",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"posts"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"",
+							"const schema = {",
+							"    \"type\": \"array\",",
+							"    \"items\": [{",
+							"        type: \"object\",",
+							"        \"properties\": {",
+							"            \"userId\": { \"type\": \"number\" },",
+							"            \"id\": { \"type\": \"number\" },",
+							"            \"title\": { \"type\": \"string\" },",
+							"            \"body\": { \"type\": \"string\" }",
+							"        },",
+							"        \"required\": [\"userId\", \"id\", \"title\", \"body\"],",
+							"        \"additionalProperties\": false",
+							"    }]",
+							"}",
+							"",
+							"",
+							"pm.test(\"Validando parámetros de respuesta del Api de consulta de posts\", () => {",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"    var Ajv = require('ajv'),",
+							"        ajv = new Ajv({ logger: console });",
+							"    const valid = ajv.validate(schema, pm.response.json());",
+							"    const errors = ajv.errorsText(valid.errors);",
+							"    console.log(errors);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Feature Users",
+			"item": [
+				{
+					"name": "2.5 Escenario: [Users] Validar que se visualicen mis datos personales al ingresar a la sección ‘Mi perfil’.",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userId = pm.iterationData.get(\"id_usuario\");\r",
+									"    pm.variables.set(\"userId\", userId);\r",
+									"   \r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"2.5 Escenario: [Users] Validar que se visualicen mis datos personales al ingresar a la sección ‘Mi perfil’.\", function () {\r",
+									"\r",
+									"    pm.expect(pm.iterationData.get(\"id_usuario\")).to.eq(jsonData.id)\r",
+									"    pm.expect(pm.iterationData.get(\"name\")).to.eq        (jsonData.name)\r",
+									"    pm.expect(pm.iterationData.get(\"name\")).to.eq(jsonData.name)\r",
+									"    pm.expect(pm.iterationData.get(\"username\")).to.eq(jsonData.username)\r",
+									"    pm.expect(pm.iterationData.get(\"email\")).to.eq(jsonData.email)\r",
+									"    pm.expect(pm.iterationData.get(\"street\")).to.eq(jsonData.address.street)\r",
+									"    pm.expect(pm.iterationData.get(\"city\")).to.eq(jsonData.address.city)\r",
+									"    pm.expect(pm.iterationData.get(\"phone\")).to.eq(jsonData.phone)\r",
+									"    pm.expect(pm.iterationData.get(\"website\")).to.eq(jsonData.website)\r",
+									"    pm.expect(pm.iterationData.get(\"companyName\")).to.eq(jsonData.company.name)\r",
+									"\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/users/{{userId}}",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5 Escenario: [Users] Validar que con un usuario administrador se visualice el listado completo de usuarios del sistema",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"const userIds = jsonData.map(user => user.id)\r",
+									"function removerRepetidos(valor, i, self) {\r",
+									"    return self.indexOf(valor) === i;\r",
+									"}\r",
+									"pm.test(\"2.5 Escenario: [Users] Validar que con un usuario administrador se visualice el listado completo de usuarios del sistema\", function () {\r",
+									"    var idUnicos = userIds.filter(removerRepetidos);\r",
+									"    pm.expect(idUnicos.length).to.be.above(1)\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/users/",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"response ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Feature Albums",
+			"item": [
+				{
+					"name": "2.3 Escenario:  [Albums] Validar que un usuario pueda consultar todos sus albums desde la sección ‘Mis albums’",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userId = pm.iterationData.get(\"id_usuario\");\r",
+									"    pm.variables.set(\"userId\", userId);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"const userIds=jsonData.map(user => user.userId)\r",
+									"\r",
+									"pm.test(\"2.3 Escenario:  [Albums] Validar que un usuario pueda consultar todos sus albums desde la sección ‘Mis albums’\", function () {    \r",
+									" for (let i = 0; i < userIds.length; i++) {     \r",
+									" pm.expect(userIds[i]).to.eql(pm.variables.get(\"userId\"));\r",
+									"}\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/users/{{userId}}/albums",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}",
+								"albums"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 Escenario:[Albums] Validar que al ingresar a un álbum, este contiene al menos una foto",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									"const bodyRequest = {\r",
+									"    url: pm.environment.get(\"web-api-host\") + '/users/' + pm.iterationData.get(\"id_usuario\") + '/albums',\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(bodyRequest, (error, response) => {\r",
+									"    console.log(response.json()[0].id)\r",
+									"\r",
+									"    if (response.json()[0].id > 0 && response.json()[0].id != undefined) {\r",
+									"        pm.globals.set(\"IdAlbumValid\", response.json()[0].id)\r",
+									"    }else {\r",
+									"        pm.expect.fail(\"response.json()[0].id invalido\")\r",
+									"\r",
+									"    }\r",
+									"    if(error != undefined){\r",
+									"\r",
+									"        pm.expect.fail(\"Error en pm.sendRequest consulta albums\")\r",
+									"    }\r",
+									"    \r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"2.4 Escenario:[Albums] Validar que al ingresar a un álbum, este contiene al menos una foto\", function () {    \r",
+									"pm.expect(jsonData[0].albumId).not.eql(undefined);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/albums/{{IdAlbumValid}}/photos",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"albums",
+								"{{IdAlbumValid}}",
+								"photos"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"response ok\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"pm.test(\"Tiempo de respuesta menor a  \" + pm.environment.get(\"request-timeout\"), function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(Number(pm.environment.get(\"request-timeout\")));",
+					"});"
+				]
+			}
+		}
+	]
+}

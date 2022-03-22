@@ -26,18 +26,127 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"const userIds = jsonData.map(user => user.userId)\r",
+									"\r",
+									"pm.test(\"2.1 Escenario:  [Posts] Validar que un usuario pueda consultar todos sus posts desde la sección ‘Mis posts’\", function () {\r",
+									"    for (let i = 0; i < userIds.length; i++) {\r",
+									"        pm.expect(userIds[i]).to.eql(pm.variables.get(\"userId\"));\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/users/{{userId}}/posts",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Escenario:  [Posts] Validar que la sección  ‘Mis posts’ no muestre posteos duplicados",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userId = pm.iterationData.get(\"id_usuario\");\r",
+									"    pm.variables.set(\"userId\", userId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
 									"\r",
 									"const jsonData = pm.response.json();\r",
-									"const userIds=jsonData.map(user => user.userId)\r",
+									"const postsIds = jsonData.map(post => post.id)\r",
 									"\r",
-									"pm.test(\"2.1 Escenario:  [Posts] Validar que un usuario pueda consultar todos sus posts desde la sección ‘Mis posts’\", function () {    \r",
-									" for (let i = 0; i < userIds.length; i++) {     \r",
-									" pm.expect(userIds[i]).to.eql(pm.variables.get(\"userId\"));\r",
-									"}\r",
+									"\r",
+									"pm.test(\"2.2 Escenario:  [Posts] Validar que la sección  ‘Mis posts’ no muestre posteos duplicados\", function () {\r",
+									"    let posteosRepetidos = 0\r",
+									"    for (let i = 0; i < postsIds.length; i++) {\r",
+									"        for (let j = i + 1; j < postsIds.length; j++) {\r",
+									"            if (postsIds[i] == postsIds[j]) {\r",
+									"                posteosRepetidos = 1\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"    pm.expect(posteosRepetidos).to.be.eq(0)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/users/{{userId}}/posts",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 Escenario:  [Posts] Validar que los posts de la sección  ‘Mis posts’ contienen no tienen vacío el titulo ni el contenido",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userId = pm.iterationData.get(\"id_usuario\");\r",
+									"    pm.variables.set(\"userId\", userId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"2.3 Escenario:  [Posts] Validar que los posts de la sección  ‘Mis posts’ contienen no tienen vacío el titulo ni el contenido\", function () {\r",
+									"    let posteoSinTitulo = 0\r",
+									"    let posteoSinContenido = 0\r",
+									"    for (let i = 0; i < jsonData.length; i++) {\r",
+									"        if (jsonData[i].title.trim() == \"\") {\r",
+									"            posteoSinTitulo = posteoSinTitulo + 1\r",
+									"        }\r",
+									"        if (jsonData[i].title.trim() == \"\") {\r",
+									"            posteoSinContenido = posteoSinContenido + 1\r",
+									"        }\r",
+									"    }\r",
+									"    pm.expect(posteoSinTitulo).to.be.eq(0)\r",
+									"    pm.expect(posteoSinContenido).to.be.eq(0)\r",
 									"});\r",
-									"\r",
-									"\r",
-									"\r",
 									"\r",
 									"\r",
 									""
@@ -64,7 +173,7 @@
 					"response": []
 				},
 				{
-					"name": "2.2 Escenario:  [Posts] Validar que un usuario pueda consultar todos los posts creados desde la ‘sección posts de todos los usuarios’",
+					"name": "2.4 Escenario:  [Posts] Validar que un usuario pueda consultar todos los posts creados desde la ‘sección posts de todos los usuarios’",
 					"event": [
 						{
 							"listen": "test",
@@ -78,7 +187,7 @@
 									"    return self.indexOf(valor) === i;\r",
 									"}\r",
 									"\r",
-									"pm.test(\"2.2 Escenario:  [Posts] Validar que un usuario pueda consultar todos los posts creados desde la ‘sección posts de todos los usuarios’\", function () {\r",
+									"pm.test(\"2.4 Escenario:  [Posts] Validar que un usuario pueda consultar todos los posts creados desde la ‘sección posts de todos los usuarios’\", function () {\r",
 									"    var idUnicos = userIds.filter(removerRepetidos);\r",
 									"    pm.expect(idUnicos.length).to.be.above(0)\r",
 									"});\r",
@@ -166,7 +275,7 @@
 			"name": "Feature Users",
 			"item": [
 				{
-					"name": "2.5 Escenario: [Users] Validar que se visualicen mis datos personales al ingresar a la sección ‘Mi perfil’.",
+					"name": "2.10 Escenario: [Users] Validar que se visualicen mis datos personales al ingresar a la sección ‘Mi perfil’.",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -188,7 +297,7 @@
 								"exec": [
 									"const jsonData = pm.response.json();\r",
 									"\r",
-									"pm.test(\"2.5 Escenario: [Users] Validar que se visualicen mis datos personales al ingresar a la sección ‘Mi perfil’.\", function () {\r",
+									"pm.test(\"2.10 Escenario: [Users] Validar que se visualicen mis datos personales al ingresar a la sección ‘Mi perfil’\", function () {\r",
 									"\r",
 									"    pm.expect(pm.iterationData.get(\"id_usuario\")).to.eq(jsonData.id)\r",
 									"    pm.expect(pm.iterationData.get(\"name\")).to.eq        (jsonData.name)\r",
@@ -230,7 +339,47 @@
 					"response": []
 				},
 				{
-					"name": "2.5 Escenario: [Users] Validar que con un usuario administrador se visualice el listado completo de usuarios del sistema",
+					"name": "2.11 Escenario: [Users] Validar que con un usuario administrador se visualice el listado completo de usuarios del sistema.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"const userIds = jsonData.map(user => user.id)\r",
+									"function removerRepetidos(valor, i, self) {\r",
+									"    return self.indexOf(valor) === i;\r",
+									"}\r",
+									"pm.test(\"2.11 Escenario: [Users] Validar que con un usuario administrador se visualice el listado completo de usuarios del sistema.\", function () {\r",
+									"    var idUnicos = userIds.filter(removerRepetidos);\r",
+									"    pm.expect(idUnicos.length).to.be.above(1)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/users/",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.12 Escenario: [Users] Validar que todos los usuarios tengan registrado los datos obligatorios (email,nombre y username)",
 					"event": [
 						{
 							"listen": "test",
@@ -238,14 +387,92 @@
 								"exec": [
 									"\r",
 									"const jsonData = pm.response.json();\r",
-									"const userIds = jsonData.map(user => user.id)\r",
-									"function removerRepetidos(valor, i, self) {\r",
-									"    return self.indexOf(valor) === i;\r",
-									"}\r",
-									"pm.test(\"2.5 Escenario: [Users] Validar que con un usuario administrador se visualice el listado completo de usuarios del sistema\", function () {\r",
-									"    var idUnicos = userIds.filter(removerRepetidos);\r",
-									"    pm.expect(idUnicos.length).to.be.above(1)\r",
+									"pm.test(\"2.12 Escenario: [Users] Validar que todos los usuarios tengan registrado los datos obligatorios (email,nombre y username)\", function () {\r",
+									"    for (let i = 0; i < jsonData.length; i++) {\r",
+									"        pm.expect(jsonData[i].name.trim().length).to.be.above(0)\r",
+									"        pm.expect(jsonData[i].username.trim().length).to.be.above(0)\r",
+									"        pm.expect(jsonData[i].email.trim().length).to.be.above(0)\r",
+									"    }\r",
+									"\r",
 									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/users/",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.13 Escenario:  [Posts] Validar que no existan usuarios registrados con el mismo username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"const usernames = jsonData.map(user => user.username)\r",
+									"\r",
+									"pm.test(\"2.13 Escenario:  [Posts] Validar que no existan usuarios registrados con el mismo username\", function () {\r",
+									"    usernamesRepetidos = 0\r",
+									"    for (let i = 0; i < usernames.length; i++) {\r",
+									"        for (let j = i + 1; j < usernames.length; j++) {\r",
+									"            if (usernames[i] == usernames[j]) {\r",
+									"                usernamesRepetidos = usernamesRepetidos + 1\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"    pm.expect(usernamesRepetidos).to.be.eq(0)\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
 									"\r",
 									"\r",
 									"\r",
@@ -307,7 +534,7 @@
 			"name": "Feature Albums",
 			"item": [
 				{
-					"name": "2.3 Escenario:  [Albums] Validar que un usuario pueda consultar todos sus albums desde la sección ‘Mis albums’",
+					"name": "2.5 Escenario:  [Albums] Validar que un usuario pueda consultar todos sus albums desde la sección ‘Mis albums’",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -327,7 +554,7 @@
 									"const jsonData = pm.response.json();\r",
 									"const userIds=jsonData.map(user => user.userId)\r",
 									"\r",
-									"pm.test(\"2.3 Escenario:  [Albums] Validar que un usuario pueda consultar todos sus albums desde la sección ‘Mis albums’\", function () {    \r",
+									"pm.test(\"2.5 Escenario:  [Albums] Validar que un usuario pueda consultar todos sus albums desde la sección ‘Mis albums’\", function () {    \r",
 									" for (let i = 0; i < userIds.length; i++) {     \r",
 									" pm.expect(userIds[i]).to.eql(pm.variables.get(\"userId\"));\r",
 									"}\r",
@@ -361,7 +588,7 @@
 					"response": []
 				},
 				{
-					"name": "2.4 Escenario:[Albums] Validar que al ingresar a un álbum, este contiene al menos una foto",
+					"name": "2.6 Escenario:[Albums] Validar que al ingresar a un álbum, este contiene al menos una foto",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -384,20 +611,17 @@
 									"};\r",
 									"\r",
 									"pm.sendRequest(bodyRequest, (error, response) => {\r",
-									"    console.log(response.json()[0].id)\r",
 									"\r",
 									"    if (response.json()[0].id > 0 && response.json()[0].id != undefined) {\r",
 									"        pm.globals.set(\"IdAlbumValid\", response.json()[0].id)\r",
-									"    }else {\r",
+									"    } else {\r",
 									"        pm.expect.fail(\"response.json()[0].id invalido\")\r",
 									"\r",
 									"    }\r",
-									"    if(error != undefined){\r",
+									"    if (error != undefined) {\r",
 									"\r",
 									"        pm.expect.fail(\"Error en pm.sendRequest consulta albums\")\r",
 									"    }\r",
-									"    \r",
-									"\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -410,7 +634,7 @@
 									"\r",
 									"const jsonData = pm.response.json();\r",
 									"\r",
-									"pm.test(\"2.4 Escenario:[Albums] Validar que al ingresar a un álbum, este contiene al menos una foto\", function () {    \r",
+									"pm.test(\"2.6 Escenario:[Albums] Validar que al ingresar a un álbum, este contiene al menos una foto\", function () {    \r",
 									"pm.expect(jsonData[0].albumId).not.eql(undefined);\r",
 									"});\r",
 									"\r",
@@ -439,6 +663,217 @@
 								"albums",
 								"{{IdAlbumValid}}",
 								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.7 Escenario:[Albums] Validar que no existan títulos de albums que superen la cantidad de caracteres permitidos",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"const title = jsonData.map(album => album.title)\r",
+									"\r",
+									"let max_caracteres_titulo_album= pm.iterationData.get(\"max_caracteres_titulo_album\")\r",
+									"let cantCaracteresTitle=max_caracteres_titulo_album+1\r",
+									"\r",
+									"pm.test(\"Escenario:[Albums] Validar que todos los albums posean un título de menos de \"+  pm.iterationData.get(\"max_caracteres_titulo_album\") +\" caracteres\" , function () {\r",
+									"\r",
+									"    for (let i = 0; i < title.length; i++) {\r",
+									"        pm.expect(title[i].length).to.below(cantCaracteresTitle)\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/albums",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"albums"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.8  Escenario:[Albums] Validar que un usuario no supere el máximo de albums permitidos",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"const userIds = jsonData.map(album => album.userId)\r",
+									"\r",
+									"function removerRepetidos(valor, i, self) {\r",
+									"    return self.indexOf(valor) === i;\r",
+									"}\r",
+									"\r",
+									"let usrAlbums_below_than = pm.iterationData.get(\"max_albums_por_usuario\")+1\r",
+									"\r",
+									"pm.test(\"Escenario:[Albums] Validar que no existan más de \"+pm.iterationData.get(\"max_albums_por_usuario\")+\" albums asociados al mismo usuario\", function () {\r",
+									"    let userId = userIds.filter(removerRepetidos);\r",
+									"    let count = 0;\r",
+									"    for (let i = 0; i < userId.length; i++) {\r",
+									"        for (let j = 0; j < userIds.length; j++) {\r",
+									"            if (userIds[j] == userId[i]) {\r",
+									"                count = count + 1\r",
+									"            }\r",
+									"        }\r",
+									"        pm.expect(count).to.be.below(usrAlbums_below_than)\r",
+									"        count = 0\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/albums",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"albums"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.9 Escenario:[Albums] Validar que todos los álbumes registrados pertenecen a usuarios vigentes",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const bodyRequest = {\r",
+									"    url: pm.environment.get(\"web-api-host\") + '/users/',\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(bodyRequest, (error, response) => {\r",
+									"    if (response.json()[0].id > 0 && response.json()[0].id != undefined) {\r",
+									"        pm.globals.set(\"activeUsers\", response.json().map(usuarios => usuarios.id));\r",
+									"    } else {\r",
+									"        pm.expect.fail(\" API users response.json()[0].id invalido\")\r",
+									"    }\r",
+									"    if (error != undefined) {\r",
+									"        pm.expect.fail(\"Error en pre-request al consultar api users\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"let activeUsers = pm.globals.get(\"activeUsers\");\r",
+									"\r",
+									"pm.test(\"2.9 Escenario:[Albums] Validar que todos los álbumes registrados pertenecen a usuarios vigentes\", function () {\r",
+									"    console.log(activeUsers)\r",
+									"    let userValid = 0\r",
+									"    for (let i = 0; i < jsonData.length; i++) {\r",
+									"        for (let j = 0; j < activeUsers.length; j++) {\r",
+									"            if (jsonData[i].userId == activeUsers[j]) {\r",
+									"                userValid = 1\r",
+									"            }\r",
+									"        }\r",
+									"        pm.expect(userValid).to.eq(1)\r",
+									"        userValid = 0\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{web-api-host}}/albums",
+							"host": [
+								"{{web-api-host}}"
+							],
+							"path": [
+								"albums"
 							]
 						}
 					},
